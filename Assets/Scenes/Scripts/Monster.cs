@@ -13,5 +13,9 @@ public class Monster : Unit
         Bullet bullet = collision.GetComponent<Bullet>();
 
         if (bullet) ReceiveDamage();
+
+        Character character = collision.GetComponent<Character>();
+
+        if (character) character.ReceiveDamage();
     }
 }

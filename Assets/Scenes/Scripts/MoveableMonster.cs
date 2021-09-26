@@ -10,14 +10,14 @@ public class MoveableMonster : Monster
 
     private Vector3 direction;
 
-    private Bullet bullet;
+   
 
     private SpriteRenderer sprite;
 
     protected override void Awake()
     {
         sprite = GetComponentInChildren<SpriteRenderer>();
-        bullet = Resources.Load<Bullet>("Bullet");
+        
     }
 
     protected override void Update()

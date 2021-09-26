@@ -10,6 +10,16 @@ public class Character : Unit
     [SerializeField]
     private int lives = 5;
 
+    public int Lives
+    {
+        get { return lives; }
+        set { 
+            if (value < 5) lives = value;
+            livesBar.Refresh();
+        }
+    }
+    private LivesBar livesBar;
+
     [SerializeField]
     private float jumpForce = 15.0F;
 
@@ -35,6 +45,7 @@ public class Character : Unit
         animator = GetComponent<Animator>();
         sprite = GetComponentInChildren<SpriteRenderer>();
         bullet = Resources.Load<Bullet>("Bullet");
+        livesBar = FindObjectOfType<LivesBar>();
 
     }
 
@@ -90,7 +101,7 @@ public class Character : Unit
 
     public override void ReceiveDamage()
     {
-        lives--;
+        Lives--;
         Debug.Log(lives);
 
         rigidbody.velocity = Vector3.zero; //обнуление ускорения чтоб дамажило и сверху
@@ -100,8 +111,8 @@ public class Character : Unit
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //Unit unit = collision.gameObject.GetComponent<Unit>();
-        //if (unit) ReceiveDamage();
+        Bullet bullet = collision.gameObject.GetComponent<Bullet>();
+        if (bullet && bullet.Parent != gameObject) ReceiveDamage();
 
     }
 }

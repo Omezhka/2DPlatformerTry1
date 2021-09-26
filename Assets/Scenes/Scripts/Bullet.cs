@@ -17,7 +17,13 @@ public class Bullet : MonoBehaviour
 
     public GameObject Parent
     {
+        get { return parent; }
         set { parent = value; }
+    }
+
+    public Color Color
+    {
+        set { sprite.color = value; }
     }
 
     private void Awake()
@@ -36,6 +42,9 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Unit unit = collision.GetComponent<Unit>();
-        if (unit && unit.gameObject!=parent) Destroy(gameObject);
+        if (unit && unit.gameObject != parent)
+        { 
+            Destroy(gameObject);
+        }
     }
 }
