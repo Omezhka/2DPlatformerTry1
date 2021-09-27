@@ -11,7 +11,8 @@ public class Character : Unit
     [SerializeField]
     private int lives = 5;
 
-    
+    [SerializeField]
+    private GameObject deathScreen;
     
     public int Lives
     {
@@ -37,9 +38,6 @@ public class Character : Unit
     bool isAlive = true;
 
     private Bullet bullet;
-
-    private GameObject deathScreen;
-
 
     private CharState State
     {
@@ -129,7 +127,7 @@ public class Character : Unit
         isAlive = false;
         State = CharState.Die;
 
-       // if(!deathScreen.activeSelf) deathScreen.SetActive(true);
+        deathScreen.SetActive(true);
         
     }
 
