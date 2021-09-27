@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Character : Unit
 {
@@ -10,11 +11,14 @@ public class Character : Unit
     [SerializeField]
     private int lives = 5;
 
+    
+    
     public int Lives
     {
         get { return lives; }
-        set { 
-            if (value < 5) lives = value;
+        set 
+        { 
+            if (value <= 5) lives = value;
             livesBar.Refresh();
         }
     }
@@ -30,8 +34,12 @@ public class Character : Unit
     private SpriteRenderer sprite;
 
     bool isGrounded = false;
+    bool isAlive = true;
 
     private Bullet bullet;
+
+    private GameObject deathScreen;
+
 
     private CharState State
     {
@@ -56,16 +64,19 @@ public class Character : Unit
 
     private void Update()
     {
-        if (Input.GetButtonDown("Fire1")) Shoot();
-        if (isGrounded) State = CharState.Idle;
-        if (Input.GetButton("Horizontal")) Run();
-        if (isGrounded && Input.GetButtonDown("Jump")) Jump();
+        if (Input.GetButtonDown("Fire1") && isAlive) Shoot();
+        if (isGrounded && isAlive) State = CharState.Idle;
+        if (Input.GetButton("Horizontal") && isAlive) Run();
+        if (isGrounded && Input.GetButtonDown("Jump") && isAlive) Jump();
+        if (Input.GetButtonDown("Submit") & !isAlive) SceneManager.LoadScene("SampleScene");
+        if (Input.GetButtonDown("Cancel")) Application.Quit();
+        
     }
 
     private void Run()  
     {
 
-        if(isGrounded) State = CharState.Run;
+        if(isGrounded && isAlive) State = CharState.Run;
         Vector3 direction = transform.right * Input.GetAxis("Horizontal");
 
         transform.position = Vector3.MoveTowards(transform.position, transform.position + direction, speed * Time.deltaTime);
@@ -85,7 +96,7 @@ public class Character : Unit
 
         isGrounded = colliders.Length > 1;
 
-        if (!isGrounded) State = CharState.Jump;
+        if (!isGrounded && isAlive) State = CharState.Jump;
     }
 
     private void Shoot()
@@ -102,12 +113,26 @@ public class Character : Unit
     public override void ReceiveDamage()
     {
         Lives--;
+
+        if (Lives > 0)
+        {
+            rigidbody.velocity = Vector3.zero; //обнуление ускорени€ чтоб дамажило мобов сверху
+            rigidbody.AddForce(transform.up * 6.0F, ForceMode2D.Impulse);
+        }
+        else Die();
+        
         Debug.Log(lives);
-
-        rigidbody.velocity = Vector3.zero; //обнуление ускорени€ чтоб дамажило и сверху
-        rigidbody.AddForce(transform.up * 6.0F, ForceMode2D.Impulse);
-
     }
+
+    protected override void Die()
+    { 
+        isAlive = false;
+        State = CharState.Die;
+
+       // if(!deathScreen.activeSelf) deathScreen.SetActive(true);
+        
+    }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -121,6 +146,7 @@ public enum CharState
 {
     Idle,
     Run,
-    Jump
+    Jump,
+    Die
 }
 
